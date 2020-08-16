@@ -9,6 +9,14 @@ import {
   GET_USER_AND_REPOS,
 } from '../types';
 
+let githubToken;
+
+if (process.env.NODE_ENV !== 'production') {
+  githubToken = process.env.REACT_APP_GITHUB_TOKEN;
+} else {
+  githubToken = process.env.GITHUB_TOKEN;
+}
+
 const GithubState = (props) => {
   const initialState = {
     users: [],
@@ -22,7 +30,7 @@ const GithubState = (props) => {
   const github = axios.create({
     baseURL: 'https://api.github.com',
     timeout: 1000,
-    headers: { Authorization: process.env.REACT_APP_GITHUB_TOKEN },
+    headers: { Authorization: githubToken },
   });
 
   // Search Users
