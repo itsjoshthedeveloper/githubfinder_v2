@@ -6,8 +6,7 @@ import {
   SEARCH_USERS,
   SET_LOADING,
   CLEAR_USERS,
-  GET_USER,
-  GET_REPOS,
+  GET_USER_AND_REPOS,
 } from '../types';
 
 const GithubState = (props) => {
@@ -36,14 +35,29 @@ const GithubState = (props) => {
       type: SEARCH_USERS,
       payload: res.data.items,
     });
-    console.log(res.data.items);
   };
 
-  // Get User
+  // Get User and Repos
+  const getUserAndRepos = async (username) => {
+    setLoading();
 
-  // Get Repos
+    const user = await github.get(`/users/${username}`);
+
+    const repos = await github.get(
+      `/users/${username}/repos?per_page=5&sort=created:asc?`
+    );
+
+    dispatch({
+      type: GET_USER_AND_REPOS,
+      payload: {
+        user: user.data,
+        repos: repos.data,
+      },
+    });
+  };
 
   // Clear Users
+  const clearUsers = () => dispatch({ type: CLEAR_USERS });
 
   // Set Loading
   const setLoading = () => dispatch({ type: SET_LOADING });
@@ -55,7 +69,9 @@ const GithubState = (props) => {
         user: state.user,
         repos: state.repos,
         loading: state.loading,
-        searchUsers: searchUsers,
+        searchUsers,
+        clearUsers,
+        getUserAndRepos,
       }}
     >
       {props.children}
